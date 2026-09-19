@@ -15,7 +15,8 @@ Hệ thống mô phỏng phiên đấu giá trực tuyến theo kiến trúc **M
 - **Python 3.10** trở lên
 - Hệ điều hành: Windows, macOS, hoặc Linux (đã test trên Ubuntu 22.04)
 - Không cần cài thư viện ngoài (chỉ dùng module chuẩn: `socket`, `threading`, `time`)
-- Download các file client.py, server.py và stress_test.py (nếu muốn test các hidden cases)
+- Download và tải các file client.py, server.py, stress_test.py (nếu muốn test các hidden cases) vào folder
+- Upload folder lên VSCode (hoặc phần mềm code bạn đang sử dụng)
 
 ## Cách chạy hệ thống
 
