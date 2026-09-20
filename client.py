@@ -200,7 +200,7 @@ def main():
                 break
     
     except KeyboardInterrupt:
-        print("\n[CLIENT] Đã nhấn Ctrl+C, thoát...")
+        print("\n[CLIENT] Client tạm thời disconnected, thoát...")
     
     finally:
         running = False
@@ -208,7 +208,7 @@ def main():
             sock.close()
         except OSError:
             pass
-        print("[CLIENT] Đã đóng kết nối. Tạm biệt! 👋")
+        print("[CLIENT] Đã dừng kết nối. Tạm biệt! 👋")
 
 
 if __name__ == "__main__":
