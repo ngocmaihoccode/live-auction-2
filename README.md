@@ -79,17 +79,12 @@ Nếu bạn muốn cho phép client từ máy tính khác kết nối vào serve
 
 ```
 .
-├── server.py               # Máy chủ đấu giá (Thành viên 1)
-├── server_no_lock.py       # Bản demo CỐ TÌNH BỎ LOCK - chỉ để chứng minh race condition, KHÔNG dùng để nộp bài
-├── client.py               # Giao diện người đấu giá (Thành viên 2)
-├── stress_test.py          # Test tự động chống race condition (đồng bộ bằng threading.Barrier)
-├── PROTOCOL.md             # Đặc tả giao thức bản tin
-├── README.md               # File này
-├── report_snippets.md      # Code snippet trích sẵn cho báo cáo LaTeX (Thành viên 3)
-├── server.log              # Log runtime (tự sinh khi chạy server.py, đã .gitignore)
-├── screenshots/            # Toàn bộ bằng chứng test: ảnh chụp 6 kịch bản KB1-KB6,
-│                           # kết quả stress test có/không lock, log so sánh, ảnh race_condition_comparison.png
-└── report/                 # Báo cáo LaTeX (Thành viên 3)
+.
+├── server.py             # Máy chủ đấu giá trung tâm (Centralized Auctioneer) - Quản lý kết nối, đếm ngược và đồng bộ Lock
+├── client.py             # Giao diện người tham gia (Bidder) - Xử lý đa luồng I/O mạng và giao diện Console
+├── stress_test.py        # Kịch bản kiểm thử chịu tải & Race Condition (Mô phỏng 30 bots đồng bộ qua threading.Barrier)
+└── README.md             # Tổng quan dự án, cấu trúc mã nguồn và hướng dẫn khởi chạy (File này)
+└── report/                 # Báo cáo LaTeX tổng kết dự án
 ```
 
 ## Trọng tâm kỹ thuật (Key Focus)
