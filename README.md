@@ -1,7 +1,5 @@
 # GROUP 5, TOPIC 8 - LIVE ONLINE AUCTION BIDDING SYSTEM
 
-[![GitHub](https://img.shields.io/badge/GitHub-Live--Online--Auction-blue)](https://github.com/ngocmaihoccode/Live-Online-Auction-Bidding-System)
-
 Project bài tập giữa kỳ môn **Công nghệ Mạng và Truyền thông** 
 
 Giảng viên: TS. Trần Đức Minh
