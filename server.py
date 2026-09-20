@@ -90,15 +90,23 @@ def countdown_display(version, seconds_left):
         
     # Nếu đếm về 0 và timer này vẫn là bản mới nhất -> chốt đơn
     if auction_active and timer_version == version and seconds_left == 0:
-        end_auction()
+        end_auction(version)
 
-def end_auction():
+def end_auction(version):
+    """
+    Kết thúc phiên đấu giá. Kiểm tra lại timer_version BÊN TRONG price_lock
+    để tránh race: một BID hợp lệ có thể đã reset timer trong khoảng thời gian
+    giữa lúc countdown về 0 và lúc hàm này lấy được lock.
+    """
     global auction_active
 
     logging.info("🔒 [LOCK] Acquire price_lock (end_auction)")
     with price_lock:
         if not auction_active:
             logging.info("🔓 [LOCK] Release price_lock (end_auction) - phiên đã kết thúc")
+            return
+        if timer_version != version:
+            logging.info("🔓 [LOCK] Release price_lock (end_auction) - timer cũ đã bị thay thế, bỏ qua")
             return
 
         auction_active = False
