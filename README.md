@@ -139,9 +139,9 @@ Toàn bộ 4 kịch bản đã được chạy thực tế và PASS 100%, bằng
 
 | Thành viên | MSSV | Phụ trách |
 |---|---|---|
-| Ngọc Mai | 11255166 | Server & Đồng bộ hóa (`server.py`, `server_no_lock.py`, `stress_test.py`) |
-| Hà Phương | 11256961 | Client & Giao diện (`client.py`) |
-| Ngọc Anh | 11250640 | Báo cáo LaTeX (`report/`, `report_snippets.md`) |
+| Phạm Ngọc Mai | 11255166 | Server & Đồng bộ hóa (`server.py`, `server_no_lock.py`, `stress_test.py`), Xây dựng Test Cases |
+| Nguyễn Hà Phương | 11256961 | Client & Giao diện (`client.py`), Check Test Cases |
+| Nguyễn Ngọc Anh | 11250640 | Báo cáo LaTeX (`report/`, `report_snippets.md`) |
 
 ## License
 
