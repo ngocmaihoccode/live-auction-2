@@ -83,8 +83,8 @@ Nếu bạn muốn cho phép client từ máy tính khác kết nối vào serve
 ├── server.py             # Máy chủ đấu giá trung tâm (Centralized Auctioneer) - Quản lý kết nối, đếm ngược và đồng bộ Lock
 ├── client.py             # Giao diện người tham gia (Bidder) - Xử lý đa luồng I/O mạng và giao diện Console
 ├── stress_test.py        # Kịch bản kiểm thử chịu tải & Race Condition (Mô phỏng 30 bots đồng bộ qua threading.Barrier)
-└── README.md             # Tổng quan dự án, cấu trúc mã nguồn và hướng dẫn khởi chạy (File này)
-└── report/                 # Báo cáo LaTeX tổng kết dự án
+└── README.md             # Tổng quan dự án, hướng dẫn sử dụng hệ thống mô phỏng đấu giá trực tuyến, cấu trúc mã nguồn
+└── report/               # Báo cáo LaTeX tổng kết dự án
 ```
 
 ## Trọng tâm kỹ thuật (Key Focus)
