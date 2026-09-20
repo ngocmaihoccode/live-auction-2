@@ -78,8 +78,6 @@ Nếu bạn muốn cho phép client từ máy tính khác kết nối vào serve
 ## Cấu trúc dự án
 
 ```
-.
-.
 ├── server.py             # Máy chủ đấu giá trung tâm (Centralized Auctioneer) - Quản lý kết nối, đếm ngược và đồng bộ Lock
 ├── client.py             # Giao diện người tham gia (Bidder) - Xử lý đa luồng I/O mạng và giao diện Console
 ├── stress_test.py        # Kịch bản kiểm thử chịu tải & Race Condition (Mô phỏng 30 bots đồng bộ qua threading.Barrier)
