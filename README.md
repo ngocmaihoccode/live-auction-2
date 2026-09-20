@@ -102,45 +102,38 @@ Theo yêu cầu của đề bài, hệ thống tập trung vào:
 2. **Đồng bộ hóa đa luồng** — pattern check-then-act trong critical section
 3. **Countdown timer** — reset khi có bid mới, xử lý race condition giữa timer và bid
 
-Xem file `PROTOCOL.md` để biết chi tiết giao thức bản tin.
-
 ## Tính năng đã cài đặt
 
-**Đã có:**
-- Đồng bộ hóa đa luồng bằng `threading.Lock` (`price_lock`, `room_lock`) cho toàn bộ biến dùng chung
-- Countdown timer 15s, reset khi có bid mới, chỉ bắt đầu khi có client đầu tiên JOIN (tránh phiên tự kết thúc lúc chưa ai tham gia)
-- Validate bid: chặn số tiền không hợp lệ và số tiền ≤ 0
-- Logging chi tiết ra console **và** file `server.log` (format `[YYYY-MM-DD HH:MM:SS] [LEVEL] Nội dung`), có log acquire/release lock, timer reset, bid bị từ chối (WARNING), exception (ERROR)
-- Shutdown sạch: bắt tín hiệu SIGINT/SIGTERM, đóng hết client, giải phóng port ngay lập tức (không bị kẹt TIME_WAIT)
-- Xử lý disconnect an toàn trong `finally` — server không crash khi 1 client mất kết nối đột ngột
-- `server_no_lock.py` — bản demo cố tình bỏ lock để chứng minh race condition, phục vụ báo cáo (Task 3.1)
+**Đã hoàn thiện:**
+- Đồng bộ hóa đa luồng (Thread-safe): Sử dụng `threading.Lock` (`price_lock`, `room_lock`)
+để bảo vệ vùng găng (Critical Section) cho các biến dùng chung (`highest_bid`, danh sách `clients`), ngăn ngừa triệt để Race Condition.
+- Cơ chế Đếm ngược (Smart Auto-reset Timer): Đồng hồ 15s tự động đếm ngược. Hệ thống chỉ kích hoạt Timer khi có client đầu tiên JOIN (tránh phiên tự sập khi chưa có người chơi). Đặc biệt, Timer sẽ ngay lập tức reset về 15s mỗi khi có lệnh BID hợp lệ.
+- Xác thực Giá thầu (Bid Validation): Hệ thống chặn đứng các số tiền không hợp lệ (nhỏ hơn 0) và tự động từ chối (báo `ERROR`) các mức giá thấp hơn hoặc bằng giá hiện hành.
+- Hệ thống Logging Chuyên sâu: Ghi log chi tiết ra Console và file server.log (chuẩn format `[HH:MM:SS] [LEVEL]`). Trace được toàn bộ quá trình Acquire/Release Lock, quá trình Reset Timer theo từng giây, và ghi nhận rõ ràng các lệnh từ chối (`WARNING`) hay lỗi (`ERROR`).
+- Shutdown An toàn & Giải phóng Cổng (Graceful Shutdown): Bắt tín hiệu ngắt `SIGINT/SIGTERM`, đóng toàn bộ kết nối Client êm ái và giải phóng Port 5000 ngay lập tức (loại bỏ hoàn toàn lỗi kẹt port `TIME_WAIT`).
+- Tính Chịu lỗi (Fault Tolerance): Khối `finally` xử lý ngắt kết nối an toàn. Server không bị crash (`[Errno 9]`) khi một Client bất kỳ rút cáp/tắt app đột ngột.
 
-**Hạn chế** (nằm ngoài phạm vi đã làm tới của nhóm, có thể học tập bổ sung sau):
-- Broadcast countdown timer real-time tới client (`TIMER|<giây>`)
-- Broadcast + đếm số client đang online khi có người rời phòng
-- Rate limiting chống spam bid
+**Hạn chế** (nằm ngoài phạm vi của dự án, có thể học tập bổ sung sau):
+- Broadcast đếm ngược Timer theo thời gian thực (Real-time) hiển thị trực tiếp lên màn hình Client (Hiện tại Client chỉ nhận thông báo Update Giá và thông báo Win ở giây cuối cùng).
+- Chức năng giới hạn tần suất (Rate limiting) để chống Spam tin nhắn từ một Client.
 
 ## Các kịch bản đã kiểm tra thử
 
-| # | Kịch bản | Cách test |
-|---|---|---|
-| 1 | Kết nối và bid hợp lệ | Chạy 2 client, bid tăng dần |
-| 2 | Từ chối bid thấp | Bid với giá ≤ giá hiện tại |
-| 3 | Race condition | Chạy `stress_test.py` |
-| 4 | Timer reset | Bid, chờ 10s, bid tiếp — kiểm tra timer về 15s |
-| 5 | Chốt phiên khi hết giờ | Bid, chờ đủ 15s không bid tiếp |
-| 6 | Client disconnect | Ctrl+C 1 client — server vẫn chạy |
+| # | Kịch bản kiểm tra thử | Mục tiêu | Cách test |
+|---|---|---|---|
+| 1 | Xác thực Giá thầu (Bid Validation) | Đảm bảo Server chặn các mức giá không thoả mãn điều kiện và chỉ ghi nhận giá cao nhất| 2 Client liên tiếp nhập giá thấp hơn, giá bằng và cuối cùng là giá cao hơn giá sàn|
+| 2 | Cơ chế Reset Timer | Đảm bảo quá trình đếm ngược bị ngắt quãng và đếm lại 15s ngay khi có giá hợp lệ mới | Chờ Server đếm lùi xuống còn khoảng 4 giây, Client B bắn lệnh BID giá cao hơn. Theo dõi Log đếm ngược trên Server|
+| 3 | Kiểm tra Chịu tải (Stress Test & Race Condition) | Chứng minh Mutex Lock hoạt động hoàn hảo trước hàng ngàn luồng truy cập đồng thời | Chạy script `stress_test.py` giả lập 30 Bot, bắn đồng loạt 3.000 requests vào Server trong ~3 giây bằng cơ chế `threading.Barrier`|
+| 4 | Tính Chịu lỗi (Client Disconnect) | Server phải tiếp tục phiên đấu giá tiếp khi có Client disconnected| Đang trong lúc đếm ngược 15s, nhấn Ctrl+C để giả sử rằng Clinet A disconnected. Theo dõi phản ứng tiếp tục của Server|
 
 ## Kịch bản test đã pass
 
-Toàn bộ 6 kịch bản đã chạy thực tế và PASS (Task 3.2), bằng chứng lưu trong `screenshots/`:
+Toàn bộ 4 kịch bản đã được chạy thực tế và PASS 100%, bằng chứng lưu trong thư mục `videotestcases/`:
 
-- [x] **KB1 — Bid hợp lệ:** 2 client bid tăng dần, cả 2 nhận đúng UPDATE, winner đúng người bid cao nhất → `screenshots/kb1_valid_bid.png`
-- [x] **KB2 — Từ chối bid thấp:** bid thấp hơn/bằng giá hiện tại bị từ chối với WARNING, không ảnh hưởng client khác → `screenshots/kb2_reject_low_bid.png`
-- [x] **KB3 — Race condition (có lock, `server.py`):** stress test 30 bot × 100 bid không phát hiện race condition → `screenshots/result_with_lock.txt`, `screenshots/log_test_with_lock.txt`
-- [x] **KB4 — So sánh không lock (`server_no_lock.py`):** cùng stress test lộ rõ race condition (winner khác so với KB3: bot_27 vs bot_9) → `screenshots/result_no_lock.txt`, `screenshots/log_test_no_lock.txt`, `screenshots/race_condition_comparison.png`, `screenshots/diff_evidence.txt`
-- [x] **KB5 — Timer reset:** chứng minh bằng timestamp server log (reset lúc 13:40:32 / 13:40:41 / 13:40:50, WIN xuất hiện đúng 15s sau lần reset cuối lúc 13:41:05) → `screenshots/kb5_timer_reset.png`
-- [x] **KB6 — Client disconnect:** Ctrl+C 1 client giữa phiên, server không crash, 2 client còn lại vẫn bid/nhận UPDATE bình thường → `screenshots/kb6_client_disconnect.png`
+- [x] **Test case 1 - Xác thực giá thầu:** Server bắt lỗi và từ chối ngay lập tức các mức giá thấp hơn/bằng giá khởi điểm, trả về cảnh báo ❌ Lỗi: Giá quá thấp. Mức giá hợp lệ được chấp nhận và kích hoạt chu trình cập nhật. 
+- [x] **Test Case 2 — Reset Đồng hồ:** Server log ghi nhận rõ ràng tiến trình đếm ngược đang ở mức 4 giây..., khi có lệnh BID hợp lệ, hệ thống nhảy vọt về thông báo ⏰ [TIMER] Timer đã được RESET về 15s và bắt đầu đếm lại từ 15 giây.... Không xảy ra hiện tượng chồng chéo luồng thời gian.
+- [x] **Test Case 3 — Stress Test & Lock Synchronization:** Script tự động đánh giá và trả về ✅ PASS. Dữ liệu hiển thị rõ: Tổng số 3000 bids đã gửi. Mức giá cao nhất mà Server ghi nhận KHỚP TUYỆT ĐỐI với mức giá cao nhất thực tế do hệ thống Bot sinh ra. Không xuất hiện Race Condition.
+- [x] **Test Case 4 — Client Disconnect (Fault Tolerance):** Tại những giây gần cuối của chu kỳ đếm ngược, một Client bị ngắt kết nối. Log Server báo khóa room_lock, dọn dẹp Client lỗi khỏi phòng và tiếp tục đếm lùi 8 giây... 7... 6... Phiên đấu giá kết thúc thành công cho các Client còn lại, Server dọn dẹp an toàn không văng lỗi `[Errno 9]`.
 
 ## Phân công thành viên
 
