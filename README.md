@@ -105,7 +105,6 @@ Theo yêu cầu của đề bài, hệ thống tập trung vào:
 - Tính Chịu lỗi (Fault Tolerance): Khối `finally` xử lý ngắt kết nối an toàn. Server không bị crash (`[Errno 9]`) khi một Client bất kỳ rút cáp/tắt app đột ngột.
 
 **Hạn chế** (nằm ngoài phạm vi của dự án, có thể học tập bổ sung sau):
-- Broadcast đếm ngược Timer theo thời gian thực (Real-time) hiển thị trực tiếp lên màn hình Client (Hiện tại Client chỉ nhận thông báo Update Giá và thông báo Win ở giây cuối cùng).
 - Chức năng giới hạn tần suất (Rate limiting) để chống Spam tin nhắn từ một Client.
 
 ## Các kịch bản đã kiểm tra thử
