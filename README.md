@@ -112,8 +112,8 @@ Theo yêu cầu của đề bài, hệ thống tập trung vào:
 | # | Kịch bản kiểm tra thử | Mục tiêu | Cách test |
 |---|---|---|---|
 | 1 | Xác thực Giá thầu (Bid Validation) | Đảm bảo Server chặn các mức giá không thoả mãn điều kiện và chỉ ghi nhận giá cao nhất| 2 Client liên tiếp nhập giá thấp hơn, giá bằng và cuối cùng là giá cao hơn giá sàn|
-| 2 | Cơ chế Reset Timer | Đảm bảo quá trình đếm ngược bị ngắt quãng và đếm lại 15s ngay khi có giá hợp lệ mới | Chờ Server đếm lùi xuống còn khoảng 4 giây, Client B bắn lệnh BID giá cao hơn. Theo dõi Log đếm ngược trên Server|
-| 3 | Kiểm tra Chịu tải (Stress Test & Race Condition) | Chứng minh Mutex Lock hoạt động hoàn hảo trước hàng ngàn luồng truy cập đồng thời | Chạy script `stress_test.py` giả lập 30 Bot, bắn đồng loạt 3.000 requests vào Server trong ~3 giây bằng cơ chế `threading.Barrier`|
+| 2 | Cơ chế Reset Timer | Đảm bảo quá trình đếm ngược bị ngắt quãng và đếm lại 15s ngay khi có giá hợp lệ mới | Chờ Server đếm lùi xuống ở những giây cuối cùng, Client B bắn lệnh BID giá cao hơn. Theo dõi Log đếm ngược trên Server|
+| 3 | Kiểm tra Chịu tải (Stress Test & Race Condition) | Chứng minh Mutex Lock hoạt động hoàn hảo trước hàng ngàn luồng truy cập đồng thời | Chạy script `stress_test.py` giả lập 30 Bot, bắn đồng loạt 3.000 requests vào Server bằng cơ chế `threading.Barrier`|
 | 4 | Tính Chịu lỗi (Client Disconnect) | Server phải tiếp tục phiên đấu giá tiếp khi có Client disconnected| Đang trong lúc đếm ngược 15s, nhấn Ctrl+C để giả sử rằng Clinet A disconnected. Theo dõi phản ứng tiếp tục của Server|
 
 ## Kịch bản test đã pass
